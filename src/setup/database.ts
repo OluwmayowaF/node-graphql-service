@@ -1,8 +1,7 @@
 import log from '../utils/logger';
 import firebaseAdmin from 'firebase-admin';
 import config from 'config';
-var path = require('path');
-console.log(__dirname)
+import path from 'path';
 const serviceAccount = path.resolve(__dirname, './../../service-account-credentials.json');
 
 export default () => {
