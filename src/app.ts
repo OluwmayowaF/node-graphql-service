@@ -2,7 +2,7 @@ import config from 'config';
 import express from 'express';
 import { graphqlHTTP } from 'express-graphql';
 import initDatabase from './setup/database';
-import schema from './graphql/schema';
+import schema from './graphql-schema/index';
 
 const app = express();
 
