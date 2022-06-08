@@ -8,9 +8,10 @@ const {
   findDocument,
   deleteDataById,
   findDocumentsWithinRange,
-  deleteDocuments,
+  findAndDeleteDocuments,
 } = FirestoreProcessor;
 import { DateTime, OrderType, AddressInputType, CustomerInputType } from './order.schema';
+import { UserType } from './user.schema';
 
 const RootQuery = new GraphQLObjectType({
   name: 'RootQueryType',
@@ -39,29 +40,23 @@ const RootQuery = new GraphQLObjectType({
         return getAllData('orders');
       },
     },
-    // users: {
-    //   type: new GraphQLList(UserType),
-    //   resolve(parent, args) {
-    //     return getAllData('users');
-    //   },
-    // },
   },
 });
 
 const Mutation = new GraphQLObjectType({
   name: 'Mutation',
   fields: {
-    // addUser: {
-    //   type: UserType,
-    //   args: {
-    //     email: { type: GraphQLString },
-    //     name: { type: GraphQLString },
-    //     phone: { type: GraphQLString },
-    //   },
-    //   resolve(parent, args) {
-    //     return insertData('users', args);
-    //   },
-    // },
+    registerUser: {
+      type: UserType,
+      args: {
+        email: { type: GraphQLString },
+        name: { type: GraphQLString },
+        phone: { type: GraphQLString },
+      },
+      resolve(parent, args) {
+        return insertData('users', args);
+      },
+    },
 
     addOrder: {
       type: OrderType,
@@ -80,9 +75,15 @@ const Mutation = new GraphQLObjectType({
       type: OrderType,
       args: {
         uid: { type: GraphQLID },
+        email: { type: GraphQLString },
       },
       resolve(parent, args) {
-        return deleteDataById('orders', args.uid);
+        if (args.email) {
+          return findAndDeleteDocuments('orders', 'customer.email', args.email);
+        }
+        if (args.uid) {
+          return deleteDataById('orders', args.uid);
+        }
       },
     },
   },

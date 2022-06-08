@@ -5,6 +5,7 @@ import initDatabase from './setup/database';
 import schema from './graphql/schema';
 
 const app = express();
+
 app.use(
   '/',
   graphqlHTTP({
@@ -16,9 +17,9 @@ initDatabase().then(
   async () => {
     await app.listen(config.get('app.port'));
     console.log(`\n
-	\tApplication listening on ${config.get('app.baseUrl')}:${config.get('app.port')}\n
-	\tEnvironment => ${config.util.getEnv('NODE_ENV')}: \n
-	\tDate: ${new Date()}`);
+        \tApplication listening on ${config.get('app.baseUrl')}:${config.get('app.port')}\n
+        \tEnvironment => ${config.util.getEnv('NODE_ENV')}: \n
+        \tDate: ${new Date()}`);
   },
   (err) => {
     console.log('There was an uncaught error');

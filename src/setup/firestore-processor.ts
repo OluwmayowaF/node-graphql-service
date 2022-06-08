@@ -117,7 +117,7 @@ const FirestoreProcessor = {
     }
   },
 
-  async deleteDocuments(collection: string, searchKey: string, searchValue: string) {
+  async findAndDeleteDocuments(collection: string, searchKey: string, searchValue: string): Promise<any> {
     try {
       const db = firestoredb.firestore();
 
@@ -127,12 +127,10 @@ const FirestoreProcessor = {
 
       if (snapshot.empty) return null;
 
-      let snapshotData;
       snapshot.docs.forEach((snaps) => {
         snaps.ref.delete();
-        //snapshotData = snaps.data();
       });
-      return 'snapshot.docs.map((doc) => doc.data());';
+      return null;
     } catch (e) {
       throw e;
     }
