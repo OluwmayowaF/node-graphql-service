@@ -3,6 +3,7 @@
  */
 import firestoredb from 'firebase-admin';
 import { v4 as uuidv4 } from 'uuid';
+import { autoId } from '@google-cloud/firestore/build/src/util';
 
 const FirestoreProcessor = {
   /**
@@ -35,14 +36,24 @@ const FirestoreProcessor = {
   async insertData(collection: string, obj: any) {
     try {
       const db = firestoredb.firestore();
-      obj.uid = uuidv4();
-      obj.bookingDate = Math.floor(new Date().getTime() / 1000);
+      obj.uid = autoId();
 
-      const data = await db.collection(collection).add(obj);
+      // Enforce Unique User Email
+      if (collection == 'users') {
+        const exists = await db.collection(collection).where('email', '==', obj.email).get();
+        if (exists.docs.length > 0) {
+          // Do not allow creation
+          throw new Error('User with that email already exists');
+        }
+      }
+
+      const data = await db.collection(collection).doc(obj.uid).set(obj);
 
       if (!data) return null;
 
-      return data;
+      const result = await db.collection(collection).doc(obj.uid).get();
+
+      return result.data();
     } catch (e) {
       throw e;
     }
@@ -55,6 +66,26 @@ const FirestoreProcessor = {
       const data = await db.collection(collection).get();
       if (data.empty) return null;
       return data.docs.map((doc) => doc.data());
+    } catch (e) {
+      throw e;
+    }
+  },
+
+  async findDocument(collection: string, searchKey: string, searchValue: string) {
+    try {
+      const db = firestoredb.firestore();
+
+      const data = db.collection(collection);
+
+      const snapshot = await data.where(searchKey, '==', searchValue).get();
+
+      if (snapshot.empty) return null;
+
+      let snapshotData;
+      snapshot.docs.forEach((snaps) => {
+        snapshotData = snaps.data();
+      });
+      return snapshot.docs.map((doc) => doc.data());
     } catch (e) {
       throw e;
     }

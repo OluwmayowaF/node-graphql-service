@@ -29,6 +29,7 @@
     },
     "homepage": "https://github.com/OluwmayowaF/node-graphql-service#readme",
     "dependencies": {
+        "@google-cloud/firestore": "^5.0.2",
         "@graphql-tools/schema": "^8.3.13",
         "config": "^3.3.7",
         "dotenv": "^16.0.1",
