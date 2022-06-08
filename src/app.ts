@@ -2,15 +2,13 @@ import config from 'config';
 import express from 'express';
 import { graphqlHTTP } from 'express-graphql';
 import initDatabase from './setup/database';
-import { schema } from './graphql/graphql-schema';
-import { root } from './graphql/graphql-resolver';
+import schema from './graphql/schema';
 
 const app = express();
 app.use(
   '/',
   graphqlHTTP({
     schema: schema,
-    rootValue: root,
     graphiql: true,
   }),
 );
