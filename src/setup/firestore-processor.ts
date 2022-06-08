@@ -64,7 +64,7 @@ const FirestoreProcessor = {
       const db = firestoredb.firestore();
 
       const data = await db.collection(collection).get();
-      if (data.empty) return null;
+      if (data.empty) return [];
       return data.docs.map((doc) => doc.data());
     } catch (e) {
       throw e;
@@ -79,13 +79,60 @@ const FirestoreProcessor = {
 
       const snapshot = await data.where(searchKey, '==', searchValue).get();
 
+      if (snapshot.empty) return [];
+
+      return snapshot.docs.map((doc) => doc.data());
+    } catch (e) {
+      throw e;
+    }
+  },
+
+  async findDocumentsWithinRange(collection: string, searchKey: string, startValue: string, endValue: string) {
+    try {
+      const db = firestoredb.firestore();
+
+      const data = db.collection(collection);
+
+      const snapshot = await data.where(searchKey, '>=', startValue).where(searchKey, '<=', endValue).get();
+
+      if (snapshot.empty) return [];
+
+      return snapshot.docs.map((doc) => doc.data());
+    } catch (e) {
+      throw e;
+    }
+  },
+
+  async deleteDataById(collection: string, id: any) {
+    try {
+      const db = firestoredb.firestore();
+
+      const data = await db.collection(collection).doc(id).get();
+
+      if (!data) return null;
+
+      return data.ref.delete();
+    } catch (e) {
+      throw e;
+    }
+  },
+
+  async deleteDocuments(collection: string, searchKey: string, searchValue: string) {
+    try {
+      const db = firestoredb.firestore();
+
+      const data = db.collection(collection);
+
+      const snapshot = await data.where(searchKey, '==', searchValue).get();
+
       if (snapshot.empty) return null;
 
       let snapshotData;
       snapshot.docs.forEach((snaps) => {
-        snapshotData = snaps.data();
+        snaps.ref.delete();
+        //snapshotData = snaps.data();
       });
-      return snapshot.docs.map((doc) => doc.data());
+      return 'snapshot.docs.map((doc) => doc.data());';
     } catch (e) {
       throw e;
     }
