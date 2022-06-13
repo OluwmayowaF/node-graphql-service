@@ -12,6 +12,7 @@ module.exports = {
   databases: {
     firestore: {
       url: process.env.FIRESTORE_DB_URL,
+      projectId: process.env.FIREBASE_PROJECT_ID,
     },
   },
 };

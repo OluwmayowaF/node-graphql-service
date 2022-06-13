@@ -1,25 +1,25 @@
 /**
  * Firestore Handler Processor Class
  */
-import firestoredb from 'firebase-admin';
+import admin from 'firebase-admin';
 import { v4 as uuidv4 } from 'uuid';
 import { autoId } from '@google-cloud/firestore/build/src/util';
 
 const FirestoreProcessor = {
   /**
    * @param {collection} collection
-   * @param {db} firestoreDb
+   * @param {db} admin
    * @return {Object}
    */
   async getDataById(collection: string, id: any) {
     try {
-      const db = firestoredb.firestore();
+      const db = admin.firestore();
 
       const data = await db.collection(collection).doc(id).get();
+      // console.log(data.id, d)
+      // if (!data) return null;
 
-      if (!data) return null;
-
-      return data.data();
+      return data?.data();
     } catch (e) {
       throw e;
     }
@@ -35,18 +35,10 @@ const FirestoreProcessor = {
 
   async insertData(collection: string, obj: any) {
     try {
-      const db = firestoredb.firestore();
+      const db = admin.firestore();
       obj.uid = autoId();
 
-      // Enforce Unique User Email
-      if (collection == 'users') {
-        const exists = await db.collection(collection).where('email', '==', obj.email).get();
-        if (exists.docs.length > 0) {
-          // Do not allow creation
-          throw new Error('User with that email already exists');
-        }
-      }
-
+      
       const data = await db.collection(collection).doc(obj.uid).set(obj);
 
       if (!data) return null;
@@ -61,7 +53,7 @@ const FirestoreProcessor = {
 
   async getAllData(collection: string, args?: any) {
     try {
-      const db = firestoredb.firestore();
+      const db = admin.firestore();
 
       const data = await db.collection(collection).get();
       if (data.empty) return [];
@@ -73,7 +65,7 @@ const FirestoreProcessor = {
 
   async findDocument(collection: string, searchKey: string, searchValue: string) {
     try {
-      const db = firestoredb.firestore();
+      const db = admin.firestore();
 
       const data = db.collection(collection);
 
@@ -89,7 +81,7 @@ const FirestoreProcessor = {
 
   async findDocumentsWithinRange(collection: string, searchKey: string, startValue: string, endValue: string) {
     try {
-      const db = firestoredb.firestore();
+      const db = admin.firestore();
 
       const data = db.collection(collection);
 
@@ -105,13 +97,11 @@ const FirestoreProcessor = {
 
   async deleteDataById(collection: string, id: any) {
     try {
-      const db = firestoredb.firestore();
+      const db = admin.firestore();
 
-      const data = await db.collection(collection).doc(id).get();
+      const data = await db.collection(collection).doc(id).delete();
 
-      if (!data) return null;
-
-      return data.ref.delete();
+      return data;
     } catch (e) {
       throw e;
     }
@@ -119,7 +109,7 @@ const FirestoreProcessor = {
 
   async findAndDeleteDocuments(collection: string, searchKey: string, searchValue: string): Promise<any> {
     try {
-      const db = firestoredb.firestore();
+      const db = admin.firestore();
 
       const data = db.collection(collection);
 
