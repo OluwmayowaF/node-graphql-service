@@ -21,9 +21,8 @@ Please Note an Auth token (passed as `Authorization: Bearer {authToken}`) signed
 2. Run `npm install` in root directory 
 3. Setup Environment with `.env.example` file provided for either Firebase 
 4. For Dev 
-  - Run `npm run dev`
+  - Run `npm run dev` ** Dev relies on Firebase local emulator (Set the required environment variables)
 5. For Prod 
    - Run build `npm run build`
    - Start Server `npm run serve`
 
-   
